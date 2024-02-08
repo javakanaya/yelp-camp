@@ -39,6 +39,7 @@ router.post(
 		await review.save();
 		await campground.save();
 
+		req.flash('success','Created a new review!')
 		res.redirect(`/campgrounds/${campground._id}`);
 	})
 );
@@ -52,6 +53,7 @@ router.delete(
 		await Campground.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
 		await Review.findByIdAndDelete(reviewId);
 
+		req.flash('success','Succesfully deleted review!')
 		res.redirect(`/campgrounds/${id}`);
 	})
 );

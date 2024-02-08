@@ -10,9 +10,10 @@ const { campgroundSchema } = require("../schemas");
  */
 
 const Campground = require("../models/campground");
+const { off } = require("../models/review");
 
 /**
- * MIDDLEWARE 
+ * MIDDLEWARE
  */
 // for validating camprgounds objects
 const validateCampground = (req, res, next) => {
@@ -37,7 +38,7 @@ router.get(
 	})
 );
 
-router.get("//new", (req, res) => {
+router.get("/new", (req, res) => {
 	res.render("campgrounds/new");
 });
 
@@ -49,6 +50,8 @@ router.post(
 
 		const campground = new Campground(req.body.campground);
 		await campground.save();
+
+		req.flash("success", "Successfully made a new campground!");
 		res.redirect(`/campgrounds/${campground._id}`);
 	})
 );
@@ -57,6 +60,10 @@ router.get(
 	"/:id",
 	catchAsync(async (req, res) => {
 		const campground = await Campground.findById(req.params.id).populate("reviews");
+		if (!campground) {
+			req.flash("error", "Cannot find that campground!");
+			res.redirect("/campgrounds");
+		}
 		res.render("campgrounds/show", { campground });
 	})
 );
@@ -74,6 +81,7 @@ router.put(
 	validateCampground,
 	catchAsync(async (req, res) => {
 		const campground = await Campground.findByIdAndUpdate(req.params.id, req.body.campground, { new: true });
+		req.flash("success", "Successfully updated campground!");
 		res.redirect(`/campgrounds/${campground._id}`);
 	})
 );
@@ -82,6 +90,7 @@ router.delete(
 	"/:id",
 	catchAsync(async (req, res) => {
 		await Campground.findByIdAndDelete(req.params.id);
+		req.flash("success", "Succesfully deleted campground!");
 		res.redirect("/campgrounds");
 	})
 );
