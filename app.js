@@ -6,9 +6,17 @@ const methodOverride = require("method-override");
 const ExpressError = require("./utils/ExpressError");
 const session = require("express-session");
 const flash = require("connect-flash");
+const passport = require("passport");
+const LocalStrategy = require("passport-local");
 
-const campgrounds = require("./routes/campgrounds");
-const reviews = require("./routes/reviews");
+const User = require("./models/user");
+
+/**
+ * ROUTER
+ */
+const userRoutes = require("./routes/users");
+const campgroundRoutes = require("./routes/campgrounds");
+const reviewRoutes = require("./routes/reviews");
 
 mongoose.connect("mongodb://127.0.0.1:27017/yelp-camp");
 
@@ -42,6 +50,18 @@ app.use(
 );
 app.use(flash());
 
+// you need this middleware to persisten login session
+app.use(passport.initialize());
+app.use(passport.session());
+
+// this method is fiven from the passport-local-mongoose
+passport.use(new LocalStrategy(User.authenticate()));
+
+// how do we store user in a session
+passport.serializeUser(User.serializeUser());
+
+// how do you get user out of the session
+passport.deserializeUser(User.deserializeUser());
 
 /**
  * MIDDLEWARE
@@ -59,8 +79,9 @@ app.get("/", (req, res) => {
 	res.render("home");
 });
 
-app.use("/campgrounds", campgrounds);
-app.use("/campgrounds/:id/reviews", reviews);
+app.use("/", userRoutes);
+app.use("/campgrounds", campgroundRoutes);
+app.use("/campgrounds/:id/reviews", reviewRoutes);
 
 /**
  * all : get, post, delete, put, ...

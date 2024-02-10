@@ -15,6 +15,7 @@ const Review = require("../models/review");
  * MIDDLEWARE
  */
 const validateReview = (req, res, next) => {
+	// NOT A MONGOOSE SCHEMA, BUT A JOI SCHEMA FOR VALIDATION
 	const { error } = reviewSchema.validate(req.body);
 	if (error) {
 		const msg = error.details.map((errorList) => errorList.message).join(",");

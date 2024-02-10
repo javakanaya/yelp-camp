@@ -10,7 +10,6 @@ const { campgroundSchema } = require("../schemas");
  */
 
 const Campground = require("../models/campground");
-const { off } = require("../models/review");
 
 /**
  * MIDDLEWARE
