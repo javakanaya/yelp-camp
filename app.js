@@ -66,7 +66,10 @@ passport.deserializeUser(User.deserializeUser());
 /**
  * MIDDLEWARE
  */
+// global thing middleware
 app.use((req, res, next) => {
+	console.log(res.locals.returnTo);
+	res.locals.currentUser = req.user;
 	res.locals.success = req.flash("success");
 	res.locals.error = req.flash("error");
 	next();
