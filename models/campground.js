@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const Review = require("./review");
+const { required } = require("joi");
 
 // https://res.cloudinary.com/drum2urp1/image/upload/w_300/v1707751801/YelpCamp/x6ulvjvz3mpthxu721wx.jpg
 
@@ -16,6 +17,18 @@ imageSchema.virtual("thumbnail").get(function () {
 const campgroundSchema = new Schema({
 	title: String,
 	images: [imageSchema],
+	// GeoJSON format
+	geometry: {
+		type: {
+			type: String,
+			enum: ["Point"],
+			required: true,
+		},
+		coordinates: {
+			type: [Number],
+			required: true,
+		},
+	},
 	price: Number,
 	description: String,
 	location: String,
