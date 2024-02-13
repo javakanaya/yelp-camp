@@ -1,5 +1,7 @@
 const ExpressError = require("./utils/ExpressError");
 const { campgroundSchema, reviewSchema } = require("./schemas");
+const { ObjectId } = require("mongodb");
+
 const Campground = require("./models/campground");
 const Review = require("./models/review");
 
@@ -59,5 +61,21 @@ module.exports.isReviewAuthor = async (req, res, next) => {
 		req.flash("error", "You do not have permission to do that!");
 		return res.redirect(`/campgrounds/${id}`);
 	}
+	next();
+};
+
+const isValidObjectId = (id) => {
+	return ObjectId.isValid(id) && new ObjectId(id).toString() === id;
+};
+
+module.exports.validateObjectId = (req, res, next) => {
+	const { id } = req.params; // Assuming the id is in the URL parameters
+
+	if (!isValidObjectId(id)) {
+		req.flash("error", "Invalid Campground ID");
+		return res.redirect(`/campgrounds`);
+	}
+
+	// ObjectId format is valid, continue with the next middleware
 	next();
 };

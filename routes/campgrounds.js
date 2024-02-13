@@ -11,7 +11,7 @@ const campgrounds = require("../controllers/campgrounds");
 /**
  * MIDDLEWARE
  */
-const { isLoggedIn, isCampgroundOwner, validateCampground } = require("../middleware");
+const { isLoggedIn, isCampgroundOwner, validateCampground, validateObjectId } = require("../middleware");
 
 // for enctype: form/multipart, adding the file data to request.body
 const multer = require("multer");
@@ -31,10 +31,10 @@ router.get("/new", isLoggedIn, campgrounds.renderNewForm);
 
 router
 	.route("/:id")
-	.get(catchAsync(campgrounds.showCampground))
+	.get(validateObjectId, catchAsync(campgrounds.showCampground))
 	.put(isLoggedIn, isCampgroundOwner, upload.array('image'), validateCampground, catchAsync(campgrounds.updateCampground))
 	.delete(isLoggedIn, isCampgroundOwner, catchAsync(campgrounds.deleteCampground));
 
-router.get("/:id/edit", isLoggedIn, isCampgroundOwner, catchAsync(campgrounds.renderEditForm));
+router.get("/:id/edit", validateObjectId, isLoggedIn, isCampgroundOwner, catchAsync(campgrounds.renderEditForm));
 
 module.exports = router;
